@@ -1,3 +1,5 @@
+#if INCLUDE_SERVO_CODE
+
 #include <Servo.h>
 
 //////////////////////////////////////////////////////////////////////////
@@ -144,3 +146,4 @@ void manualServos()
     }
   }
 }
+#endif // INCLUDE_SERVO_CODE

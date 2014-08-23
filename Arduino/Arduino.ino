@@ -1,13 +1,21 @@
-
 //////////////////////////////////////////////////////////////////////////
 //
 // Current mode the program is in. Change mode to different constant.
 //
 //////////////////////////////////////////////////////////////////////////
 
+#define INCLUDE_SERVO_CODE 1
+#define INCLUDE_MOTOR_CODE 1
+#define INCLUDE_ULTRASONIC_CODE 1
+
 #define MODE_SERVO 1
+#define MODE_MOTOR 2
+#define MODE_ULTRASONIC 3
+
 const byte mode = MODE_SERVO;
 const bool debugMode = true;
+
+#define SERIAL_SPEED 9600
 
 //////////////////////////////////////////////////////////////////////////
 //
@@ -17,14 +25,27 @@ const bool debugMode = true;
 
 void setup()
 {
-	Serial.begin(9600);
-	if (mode == MODE_SERVO)
+  if (debugMode)
 	{
-  	setupServos();
+		Serial.begin(SERIAL_SPEED);
 	}
-	if (debugMode)
+	switch (mode)
 	{
-  	Serial.println("Ready to party!");
+#if INCLUDE_SERVO_CODE
+		case MODE_SERVO:
+			setupServos();
+			break;
+#endif
+#if INCLUDE_MOTOR_CODE
+		case MODE_MOTOR:
+			setupMotors();
+			break;
+#endif
+#if INCLUDE_ULTRASONIC_CODE
+		case MODE_ULTRASONIC:
+			setupUltrasonic();
+			break;
+#endif
 	}
 }
 
@@ -38,8 +59,20 @@ void loop()
 {
 	switch (mode)
 	{
+#if INCLUDE_SERVO_CODE
 		case MODE_SERVO:
 			manualServos();
 			break;
+#endif
+#if INCLUDE_MOTOR_CODE
+		case MODE_MOTOR:
+			manualMotors();
+			break;
+#endif
+#if INCLUDE_ULTRASONIC_CODE
+		case MODE_ULTRASONIC:
+			automaticUltrasonicReading();
+			break;
+#endif
 	}
 }
