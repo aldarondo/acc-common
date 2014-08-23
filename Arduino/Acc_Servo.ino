@@ -75,7 +75,6 @@ void setupServos()
 		delay(SERVO_DELAY_STEP);
 		servoCurrentPosition[i] = servoTargetPosition[i];
 	}
-	servoObjects[0].write(100);
 
 	if (debugMode)
 	{

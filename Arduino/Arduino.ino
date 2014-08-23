@@ -7,10 +7,12 @@
 #define INCLUDE_SERVO_CODE 1
 #define INCLUDE_MOTOR_CODE 1
 #define INCLUDE_ULTRASONIC_CODE 1
+#define INCLUDE_LIGHT_CODE 1
 
 #define MODE_SERVO 1
 #define MODE_MOTOR 2
 #define MODE_ULTRASONIC 3
+#define MODE_LIGHT 4
 
 const byte mode = MODE_SERVO;
 const bool debugMode = true;
@@ -46,6 +48,11 @@ void setup()
 			setupUltrasonic();
 			break;
 #endif
+#if INCLUDE_LIGHT_CODE
+		case MODE_LIGHT:
+			setupLightSensors();
+			break;
+#endif
 	}
 }
 
@@ -72,6 +79,11 @@ void loop()
 #if INCLUDE_ULTRASONIC_CODE
 		case MODE_ULTRASONIC:
 			automaticUltrasonicReading();
+			break;
+#endif
+#if INCLUDE_LIGHT_CODE
+		case MODE_LIGHT:
+			automaticLightReading();
 			break;
 #endif
 	}

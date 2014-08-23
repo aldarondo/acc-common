@@ -9,6 +9,7 @@
 const int ULTRASONIC_MAXIMUM_RANGE = 15;
 const int ULTRASONIC_MINIMUM_RANGE = 0;
 const double ULTRASONIC_CONVERT_TO_MM = 1/58.2;
+const int ULTRASONIC_AUTOMATIC_DELAY = 1000;
 
 //////////////////////////////////////////////////////////////////////////
 //
@@ -59,6 +60,11 @@ void setupUltrasonic()
 	{
 		pinMode(PIN_ULTRASONIC_LEFT_TRIGGER, OUTPUT);
 		pinMode(PIN_ULTRASONIC_LEFT_ECHO, INPUT);
+	}
+
+	if (debugMode)
+	{
+		Serial.println("Ultrasonic sensor data:");
 	}
 }
 
@@ -179,26 +185,29 @@ boolean isItSafeToTheRight()
 
 void automaticUltrasonicReading()
 {
-	if (ULTRASONIC_BACK_ATTACHED)
+	if (debugMode)
 	{
-		Serial.print("Back: " + String(UltrasonicBehindDistance()) + " ");
-	}
+		if (ULTRASONIC_BACK_ATTACHED)
+		{
+			Serial.print("Back: " + String(UltrasonicBehindDistance()) + " ");
+		}
 
-	if (ULTRASONIC_FRONT_ATTACHED)
-	{
-		Serial.print("Front: " + String(UltrasonicFrontDistance()) + " ");
-	}
+		if (ULTRASONIC_FRONT_ATTACHED)
+		{
+			Serial.print("Front: " + String(UltrasonicFrontDistance()) + " ");
+		}
 
-	if (ULTRASONIC_LEFT_ATTACHED)
-	{
-		Serial.print("Left: " + String(UltrasonicLeftDistance()) + " ");
-	}
+		if (ULTRASONIC_LEFT_ATTACHED)
+		{
+			Serial.print("Left: " + String(UltrasonicLeftDistance()) + " ");
+		}
 
-	if (ULTRASONIC_RIGHT_ATTACHED)
-	{
-		Serial.print("Right: " + String(UltrasonicRightDistance()) + " ");
+		if (ULTRASONIC_RIGHT_ATTACHED)
+		{
+			Serial.print("Right: " + String(UltrasonicRightDistance()) + " ");
+		}
+		Serial.println();
 	}
-	Serial.println();
-	delay(1000);
+	delay(ULTRASONIC_AUTOMATIC_DELAY);
 }
 #endif // INCLUDE_ULTRASONIC_CODE
