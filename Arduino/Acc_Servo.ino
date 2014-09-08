@@ -8,10 +8,12 @@
 //
 //////////////////////////////////////////////////////////////////////////
 
-#define SERVO_DELAY_STEP 100
-#define SERVO_ANGLE_MINIMUM 30
-#define SERVO_ANGLE_MIDDLE 87
+#define SERVO_DELAY_STEP 15
+#define SERVO_ANGLE_MINIMUM 35
+#define SERVO_ANGLE_MIDDLE 90
 #define SERVO_ANGLE_MAXIMUM 145
+byte SERVO_MOVE_CONSISTENT = 0;
+byte SERVO_MOVE_HALVES = 1;
 
 //////////////////////////////////////////////////////////////////////////
 //
@@ -21,10 +23,10 @@
 //////////////////////////////////////////////////////////////////////////
 
 #define SERVOS 1
-const byte SERVO_PINS[SERVOS] = {13};
-byte SERVO_POSITION_START[SERVOS] = { SERVO_ANGLE_MIDDLE };
-byte SERVO_POSITION_MINIMUM[SERVOS] = { SERVO_ANGLE_MINIMUM };
-byte SERVO_POSITION_MAXIMUM[SERVOS] = { SERVO_ANGLE_MAXIMUM };
+const byte SERVO_PINS[SERVOS] = {9};
+byte SERVO_POSITION_START[SERVOS] = { SERVO_ANGLE_MIDDLE};
+byte SERVO_POSITION_MINIMUM[SERVOS] = { SERVO_ANGLE_MINIMUM};
+byte SERVO_POSITION_MAXIMUM[SERVOS] = { SERVO_ANGLE_MAXIMUM};
 
 //////////////////////////////////////////////////////////////////////////
 //
@@ -33,6 +35,7 @@ byte SERVO_POSITION_MAXIMUM[SERVOS] = { SERVO_ANGLE_MAXIMUM };
 //////////////////////////////////////////////////////////////////////////
 
 byte servoTargetPosition[SERVOS];
+byte servoStepSize[SERVOS];
 byte servoCurrentPosition[SERVOS];
 Servo servoObjects[SERVOS];
 
@@ -55,7 +58,7 @@ void setTargetPosition(byte servo, byte position)
 
 void setTargetPosition(byte listOfPositions[])
 {
-	memcpy(listOfPositions, servoTargetPosition, SERVOS);
+	memcpy(servoTargetPosition, listOfPositions, SERVOS);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -80,10 +83,10 @@ void setupServos()
 	{
 		Serial.println("To control servo(s), enter angle and letter starting with a for the first servo (eg: 100a).");
 		Serial.println("To add delay between commands, enter a space before your next command.");
+		Serial.println("To scan between minimum and maximum, enter a $ by itself.");
 		Serial.println("Angle of motion restricted from " + String(SERVO_ANGLE_MINIMUM) + " to " + String(SERVO_ANGLE_MAXIMUM) + " degrees inclusive.");
 	}
 }
-
 
 //////////////////////////////////////////////////////////////////////////
 //
@@ -93,13 +96,35 @@ void setupServos()
 
 void moveToTarget(int numberOfSteps)
 {
-	for (int step = 0; step < numberOfSteps; step++)
+	// Determine size of steps based upon target and current position of servos
+	for (int s = 0; s < SERVOS; s++) {
+		servoStepSize[s] = (servoTargetPosition[s] - servoCurrentPosition[s]) / numberOfSteps;
+	}
+
+	// Does all steps except the final step
+	for (int step = 0; step < numberOfSteps - 1; step++)
 	{
+		// Moves each servo closer to the target position
 		for (int s = 0; s < SERVOS; s++) {
-			servoCurrentPosition[s] = servoCurrentPosition[s] + ((servoTargetPosition[s] - servoCurrentPosition[s]) / numberOfSteps);
+			servoCurrentPosition[s] = servoCurrentPosition[s] + servoStepSize[s];
 			servoObjects[s].write(servoCurrentPosition[s]);
 			delay(SERVO_DELAY_STEP);
+			if (debugMode)
+			{
+				Serial.println("s = " + String(s) + " pos = " + String(servoCurrentPosition[s]));
+			}
 		}
+	}
+
+	// Corrects any division rounding for the final step so target is reached always
+	for (int s = 0; s < SERVOS; s++) {
+		servoCurrentPosition[s] = servoTargetPosition[s];
+		servoObjects[s].write(servoCurrentPosition[s]);
+		if (debugMode)
+		{
+			Serial.println("s = " + String(s) + " pos = " + String(servoCurrentPosition[s]));
+		}
+		delay(SERVO_DELAY_STEP);
 	}
 }
 
@@ -119,13 +144,12 @@ void manualServos()
     if (isDigit(ch)) {
       pos = pos * 10 + ch - '0';
 		} else if (ch == '$') {
-			Serial.println("Moving home");
 			setTargetPosition(SERVO_POSITION_START);
 			moveToTarget(12);
-			Serial.println("Moving minimum");
 			setTargetPosition(SERVO_POSITION_MINIMUM);
-			moveToTarget(6);
-			Serial.println("Moving maximum");
+			moveToTarget(12);
+			setTargetPosition(SERVO_POSITION_START);
+			moveToTarget(12);
 			setTargetPosition(SERVO_POSITION_MAXIMUM);
 			moveToTarget(12);
 			pos = 0;
@@ -138,7 +162,7 @@ void manualServos()
   			servoCurrentPosition[ch - 'a'] = pos;
 				if (debugMode)
 				{
-					Serial.println("Received " + String(pos) + ch);
+					Serial.println("Moved to " + String(pos) + ch);
 				}
 			}
       pos = 0;
