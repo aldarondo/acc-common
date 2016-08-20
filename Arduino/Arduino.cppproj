@@ -138,7 +138,7 @@
     </ToolchainSettings>
     <VisualMicroSettings>
       <VisualMicroSettings>
-        <arduino.upload.port>COM6</arduino.upload.port>
+        <arduino.upload.port>COM10</arduino.upload.port>
         <arduino.board.name>uno</arduino.board.name>
         <arduino.board.desc>Arduino Uno</arduino.board.desc>
         <arduino.board.property_bag>name=Arduino Uno
@@ -301,7 +301,7 @@ build.arch=AVR
     </ToolchainSettings>
     <VisualMicroSettings>
       <VisualMicroSettings>
-        <arduino.upload.port>COM6</arduino.upload.port>
+        <arduino.upload.port>COM10</arduino.upload.port>
         <arduino.board.name>uno</arduino.board.name>
         <arduino.board.desc>Arduino Uno</arduino.board.desc>
         <arduino.board.property_bag>name=Arduino Uno
@@ -377,6 +377,12 @@ build.arch=AVR
     <Folder Include="Visual Micro\" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Acc_Characters.ino">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="Acc_Light.ino">
+      <SubType>compile</SubType>
+    </None>
     <None Include="Acc_Motor.ino">
       <SubType>compile</SubType>
     </None>

@@ -5,9 +5,9 @@
 //////////////////////////////////////////////////////////////////////////
 
 #define INCLUDE_SERVO_CODE 1
-#define INCLUDE_MOTOR_CODE 1
-#define INCLUDE_ULTRASONIC_CODE 1
-#define INCLUDE_LIGHT_CODE 1
+#define INCLUDE_MOTOR_CODE 0
+#define INCLUDE_ULTRASONIC_CODE 0
+#define INCLUDE_LIGHT_CODE 0
 
 #define MODE_SERVO 1
 #define MODE_MOTOR 2
